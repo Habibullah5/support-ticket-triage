@@ -1,0 +1,184 @@
+"""Run the fixed evaluation suite:  python evals/run_eval.py [--update-readme]
+
+Grader: exact match on category and priority (the cheapest grader that fits a
+closed label set). Schema failures count as wrong, never skipped.
+Numbers are only ever produced by running this script against the real model.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import re
+import sys
+from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from app.config import Settings, get_settings  # noqa: E402
+from app.llm import LLMClient  # noqa: E402
+from app.logging_config import JsonlLogger  # noqa: E402
+from app.triage import TriageService  # noqa: E402
+
+CASES_PATH = ROOT / "evals" / "cases.jsonl"
+RESULTS_DIR = ROOT / "evals" / "results"
+README = ROOT / "README.md"
+START, END = "<!-- EVAL_RESULTS_START -->", "<!-- EVAL_RESULTS_END -->"
+
+
+def load_cases(path: Path = CASES_PATH) -> list[dict]:
+    with path.open(encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh if line.strip()]
+
+
+def run_cases(service: TriageService, cases: list[dict]) -> list[dict]:
+    records = []
+    for i, case in enumerate(cases, 1):
+        out = service.triage(case["ticket"], request_id=f"eval-{case['id']}")
+        res = out.result
+        rec = {
+            "id": case["id"], "tag": case.get("tag", "clear"),
+            "expected_category": case["category"], "expected_priority": case["priority"],
+            "pred_category": res.category if res else None,
+            "pred_priority": res.priority if res else None,
+            "schema_ok": out.success, "first_attempt_valid": out.first_attempt_valid,
+            "repair_attempted": out.repair_attempted, "failure_reason": out.failure_reason,
+            "latency_ms": out.latency_ms, "input_tokens": out.input_tokens,
+            "output_tokens": out.output_tokens, "cost_usd": out.cost_usd,
+        }
+        rec["category_ok"] = rec["pred_category"] == rec["expected_category"]
+        rec["priority_ok"] = rec["pred_priority"] == rec["expected_priority"]
+        rec["both_ok"] = rec["category_ok"] and rec["priority_ok"]
+        records.append(rec)
+        print(f"[{i:>2}/{len(cases)}] {case['id']} "
+              f"{'OK ' if rec['both_ok'] else 'MISS'} expected={rec['expected_category']}/{rec['expected_priority']} "
+              f"got={rec['pred_category']}/{rec['pred_priority']}", flush=True)
+    return records
+
+
+def percentile(values: list[float], pct: float) -> float:
+    """Nearest-rank percentile."""
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    return ordered[max(0, math.ceil(pct / 100 * len(ordered)) - 1)]
+
+
+def _rate(records: list[dict], key: str) -> dict:
+    n = len(records)
+    k = sum(1 for r in records if r[key])
+    return {"count": k, "total": n, "pct": round(100 * k / n, 1) if n else 0.0}
+
+
+def compute_metrics(records: list[dict]) -> dict:
+    def group(field: str) -> dict:
+        groups: dict[str, list[dict]] = defaultdict(list)
+        for r in records:
+            groups[r[field]].append(r)
+        return {name: {"n": len(rs), "category": _rate(rs, "category_ok"),
+                       "priority": _rate(rs, "priority_ok"), "both": _rate(rs, "both_ok")}
+                for name, rs in sorted(groups.items())}
+
+    lat = [r["latency_ms"] for r in records]
+    costs = [r["cost_usd"] for r in records]
+    return {
+        "n": len(records),
+        "schema_pass": _rate(records, "schema_ok"),
+        "first_attempt_schema_pass": _rate(records, "first_attempt_valid"),
+        "repair_attempted": _rate(records, "repair_attempted"),
+        "category_accuracy": _rate(records, "category_ok"),
+        "priority_accuracy": _rate(records, "priority_ok"),
+        "both_correct": _rate(records, "both_ok"),
+        "latency_ms": {"avg": round(sum(lat) / len(lat), 1) if lat else 0.0,
+                       "p95": round(percentile(lat, 95), 1)},
+        "input_tokens": sum(r["input_tokens"] for r in records),
+        "output_tokens": sum(r["output_tokens"] for r in records),
+        "cost_usd": None if (not costs or None in costs) else round(sum(costs), 4),
+        "by_category": group("expected_category"),
+        "by_case_type": group("tag"),
+        "misses": [{"id": r["id"], "expected": f"{r['expected_category']}/{r['expected_priority']}",
+                    "got": f"{r['pred_category']}/{r['pred_priority']}",
+                    "failure": r["failure_reason"]} for r in records if not r["both_ok"]],
+    }
+
+
+def _fmt(rate: dict) -> str:
+    return f"{rate['count']}/{rate['total']} ({rate['pct']}%)"
+
+
+def render_markdown(m: dict, settings: Settings) -> str:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    cost = f"${m['cost_usd']}" if m["cost_usd"] is not None else "not configured"
+    lines = [
+        f"_Generated by `python evals/run_eval.py` on {ts} · model `{settings.anthropic_model}` · "
+        f"prompts `{settings.triage_prompt}` / `{settings.repair_prompt}` · {m['n']} cases_", "",
+        "| Metric | Result |", "|---|---|",
+        f"| Schema pass rate (after at most one repair) | {_fmt(m['schema_pass'])} |",
+        f"| Schema pass on first attempt | {_fmt(m['first_attempt_schema_pass'])} |",
+        f"| Repair attempted | {_fmt(m['repair_attempted'])} |",
+        f"| Category accuracy | {_fmt(m['category_accuracy'])} |",
+        f"| Priority accuracy | {_fmt(m['priority_accuracy'])} |",
+        f"| Both correct | {_fmt(m['both_correct'])} |",
+        f"| Latency per ticket, avg / p95 | {m['latency_ms']['avg']} ms / {m['latency_ms']['p95']} ms |",
+        f"| Tokens (input / output) | {m['input_tokens']} / {m['output_tokens']} |",
+        f"| Cost for the run | {cost} |", "",
+    ]
+    for title, key in (("By category (expected label)", "by_category"), ("By case type", "by_case_type")):
+        lines += [f"**{title}**", "", "| Group | n | Category | Priority | Both |", "|---|---|---|---|---|"]
+        for name, g in m[key].items():
+            lines.append(f"| {name} | {g['n']} | {_fmt(g['category'])} | {_fmt(g['priority'])} | {_fmt(g['both'])} |")
+        lines.append("")
+    lines.append("**Cases not fully correct**")
+    lines.append("")
+    if m["misses"]:
+        lines += ["| Case | Expected | Got | Failure |", "|---|---|---|---|"]
+        lines += [f"| {x['id']} | {x['expected']} | {x['got']} | {x['failure'] or '-'} |" for x in m["misses"]]
+    else:
+        lines.append("None in this run. Single runs are not proof of perfection; see Known failures.")
+    return "\n".join(lines) + "\n"
+
+
+def update_readme(markdown: str, path: Path = README) -> bool:
+    text = path.read_text(encoding="utf-8")
+    if START not in text or END not in text:
+        return False
+    new = re.sub(re.escape(START) + r".*?" + re.escape(END),
+                 lambda _: f"{START}\n{markdown}{END}", text, flags=re.S)
+    path.write_text(new, encoding="utf-8")
+    return True
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--update-readme", action="store_true", help="paste results into README.md")
+    parser.add_argument("--limit", type=int, default=None, help="only run the first N cases (debugging)")
+    args = parser.parse_args()
+
+    settings = get_settings()
+    if settings.anthropic_api_key is None:
+        print("ANTHROPIC_API_KEY is not set. Copy .env.example to .env and add your key.", file=sys.stderr)
+        return 2
+    cases = load_cases()[: args.limit]
+    event_log = JsonlLogger(settings.log_path)
+    service = TriageService(settings, LLMClient(settings, event_log), event_log)
+
+    records = run_cases(service, cases)
+    metrics = compute_metrics(records)
+    markdown = render_markdown(metrics, settings)
+    print("\n" + markdown)
+
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    (RESULTS_DIR / "latest.json").write_text(
+        json.dumps({"metrics": metrics, "records": records}, indent=2, ensure_ascii=False), encoding="utf-8")
+    (RESULTS_DIR / "latest.md").write_text(markdown, encoding="utf-8")
+    if args.update_readme:
+        print("README updated." if update_readme(markdown) else "README markers not found; README unchanged.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

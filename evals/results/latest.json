@@ -1,0 +1,848 @@
+{
+  "metrics": {
+    "n": 30,
+    "schema_pass": {
+      "count": 30,
+      "total": 30,
+      "pct": 100.0
+    },
+    "first_attempt_schema_pass": {
+      "count": 3,
+      "total": 30,
+      "pct": 10.0
+    },
+    "repair_attempted": {
+      "count": 27,
+      "total": 30,
+      "pct": 90.0
+    },
+    "category_accuracy": {
+      "count": 30,
+      "total": 30,
+      "pct": 100.0
+    },
+    "priority_accuracy": {
+      "count": 22,
+      "total": 30,
+      "pct": 73.3
+    },
+    "both_correct": {
+      "count": 22,
+      "total": 30,
+      "pct": 73.3
+    },
+    "latency_ms": {
+      "avg": 2640.8,
+      "p95": 3254.1
+    },
+    "input_tokens": 35581,
+    "output_tokens": 4180,
+    "cost_usd": null,
+    "by_category": {
+      "account": {
+        "n": 5,
+        "category": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 2,
+          "total": 5,
+          "pct": 40.0
+        },
+        "both": {
+          "count": 2,
+          "total": 5,
+          "pct": 40.0
+        }
+      },
+      "billing": {
+        "n": 5,
+        "category": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 3,
+          "total": 5,
+          "pct": 60.0
+        },
+        "both": {
+          "count": 3,
+          "total": 5,
+          "pct": 60.0
+        }
+      },
+      "delivery": {
+        "n": 5,
+        "category": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 3,
+          "total": 5,
+          "pct": 60.0
+        },
+        "both": {
+          "count": 3,
+          "total": 5,
+          "pct": 60.0
+        }
+      },
+      "other": {
+        "n": 4,
+        "category": {
+          "count": 4,
+          "total": 4,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 4,
+          "total": 4,
+          "pct": 100.0
+        },
+        "both": {
+          "count": 4,
+          "total": 4,
+          "pct": 100.0
+        }
+      },
+      "refund": {
+        "n": 5,
+        "category": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        },
+        "both": {
+          "count": 5,
+          "total": 5,
+          "pct": 100.0
+        }
+      },
+      "technical": {
+        "n": 6,
+        "category": {
+          "count": 6,
+          "total": 6,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 5,
+          "total": 6,
+          "pct": 83.3
+        },
+        "both": {
+          "count": 5,
+          "total": 6,
+          "pct": 83.3
+        }
+      }
+    },
+    "by_case_type": {
+      "adversarial": {
+        "n": 1,
+        "category": {
+          "count": 1,
+          "total": 1,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 1,
+          "total": 1,
+          "pct": 100.0
+        },
+        "both": {
+          "count": 1,
+          "total": 1,
+          "pct": 100.0
+        }
+      },
+      "ambiguous": {
+        "n": 3,
+        "category": {
+          "count": 3,
+          "total": 3,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 1,
+          "total": 3,
+          "pct": 33.3
+        },
+        "both": {
+          "count": 1,
+          "total": 3,
+          "pct": 33.3
+        }
+      },
+      "clear": {
+        "n": 25,
+        "category": {
+          "count": 25,
+          "total": 25,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 20,
+          "total": 25,
+          "pct": 80.0
+        },
+        "both": {
+          "count": 20,
+          "total": 25,
+          "pct": 80.0
+        }
+      },
+      "non_english": {
+        "n": 1,
+        "category": {
+          "count": 1,
+          "total": 1,
+          "pct": 100.0
+        },
+        "priority": {
+          "count": 0,
+          "total": 1,
+          "pct": 0.0
+        },
+        "both": {
+          "count": 0,
+          "total": 1,
+          "pct": 0.0
+        }
+      }
+    },
+    "misses": [
+      {
+        "id": "c01",
+        "expected": "billing/medium",
+        "got": "billing/high",
+        "failure": null
+      },
+      {
+        "id": "c03",
+        "expected": "billing/medium",
+        "got": "billing/high",
+        "failure": null
+      },
+      {
+        "id": "c10",
+        "expected": "technical/medium",
+        "got": "technical/high",
+        "failure": null
+      },
+      {
+        "id": "c12",
+        "expected": "account/medium",
+        "got": "account/high",
+        "failure": null
+      },
+      {
+        "id": "c15",
+        "expected": "account/medium",
+        "got": "account/high",
+        "failure": null
+      },
+      {
+        "id": "c16",
+        "expected": "account/medium",
+        "got": "account/high",
+        "failure": null
+      },
+      {
+        "id": "c19",
+        "expected": "delivery/low",
+        "got": "delivery/medium",
+        "failure": null
+      },
+      {
+        "id": "c20",
+        "expected": "delivery/medium",
+        "got": "delivery/high",
+        "failure": null
+      }
+    ]
+  },
+  "records": [
+    {
+      "id": "c01",
+      "tag": "ambiguous",
+      "expected_category": "billing",
+      "expected_priority": "medium",
+      "pred_category": "billing",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 3199.3,
+      "input_tokens": 1261,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c02",
+      "tag": "clear",
+      "expected_category": "billing",
+      "expected_priority": "low",
+      "pred_category": "billing",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2413.6,
+      "input_tokens": 1232,
+      "output_tokens": 132,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c03",
+      "tag": "ambiguous",
+      "expected_category": "billing",
+      "expected_priority": "medium",
+      "pred_category": "billing",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2819.5,
+      "input_tokens": 1262,
+      "output_tokens": 149,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c04",
+      "tag": "clear",
+      "expected_category": "billing",
+      "expected_priority": "high",
+      "pred_category": "billing",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": true,
+      "repair_attempted": false,
+      "failure_reason": null,
+      "latency_ms": 1572.8,
+      "input_tokens": 656,
+      "output_tokens": 81,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c05",
+      "tag": "clear",
+      "expected_category": "billing",
+      "expected_priority": "medium",
+      "pred_category": "billing",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2504.5,
+      "input_tokens": 1234,
+      "output_tokens": 137,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c06",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "high",
+      "pred_category": "technical",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2664.9,
+      "input_tokens": 1247,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c07",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "medium",
+      "pred_category": "technical",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2995.4,
+      "input_tokens": 1247,
+      "output_tokens": 146,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c08",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "low",
+      "pred_category": "technical",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2633.4,
+      "input_tokens": 1241,
+      "output_tokens": 139,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c09",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "medium",
+      "pred_category": "technical",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2724.1,
+      "input_tokens": 1241,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c10",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "medium",
+      "pred_category": "technical",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2977.3,
+      "input_tokens": 1238,
+      "output_tokens": 144,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c11",
+      "tag": "clear",
+      "expected_category": "technical",
+      "expected_priority": "medium",
+      "pred_category": "technical",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2867.6,
+      "input_tokens": 1257,
+      "output_tokens": 160,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c12",
+      "tag": "clear",
+      "expected_category": "account",
+      "expected_priority": "medium",
+      "pred_category": "account",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2645.9,
+      "input_tokens": 1234,
+      "output_tokens": 142,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c13",
+      "tag": "clear",
+      "expected_category": "account",
+      "expected_priority": "high",
+      "pred_category": "account",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2738.8,
+      "input_tokens": 1265,
+      "output_tokens": 151,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c14",
+      "tag": "clear",
+      "expected_category": "account",
+      "expected_priority": "low",
+      "pred_category": "account",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": true,
+      "repair_attempted": false,
+      "failure_reason": null,
+      "latency_ms": 1300.5,
+      "input_tokens": 630,
+      "output_tokens": 58,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c15",
+      "tag": "clear",
+      "expected_category": "account",
+      "expected_priority": "medium",
+      "pred_category": "account",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 3276.7,
+      "input_tokens": 1245,
+      "output_tokens": 168,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c16",
+      "tag": "clear",
+      "expected_category": "account",
+      "expected_priority": "medium",
+      "pred_category": "account",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2616.7,
+      "input_tokens": 1243,
+      "output_tokens": 149,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c17",
+      "tag": "clear",
+      "expected_category": "delivery",
+      "expected_priority": "medium",
+      "pred_category": "delivery",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": true,
+      "repair_attempted": false,
+      "failure_reason": null,
+      "latency_ms": 1590.9,
+      "input_tokens": 642,
+      "output_tokens": 85,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c18",
+      "tag": "clear",
+      "expected_category": "delivery",
+      "expected_priority": "high",
+      "pred_category": "delivery",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2785.1,
+      "input_tokens": 1265,
+      "output_tokens": 187,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c19",
+      "tag": "non_english",
+      "expected_category": "delivery",
+      "expected_priority": "low",
+      "pred_category": "delivery",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2699.2,
+      "input_tokens": 1258,
+      "output_tokens": 139,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c20",
+      "tag": "clear",
+      "expected_category": "delivery",
+      "expected_priority": "medium",
+      "pred_category": "delivery",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2706.3,
+      "input_tokens": 1236,
+      "output_tokens": 135,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": false,
+      "both_ok": false
+    },
+    {
+      "id": "c21",
+      "tag": "ambiguous",
+      "expected_category": "delivery",
+      "expected_priority": "medium",
+      "pred_category": "delivery",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2920.7,
+      "input_tokens": 1273,
+      "output_tokens": 156,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c22",
+      "tag": "clear",
+      "expected_category": "refund",
+      "expected_priority": "medium",
+      "pred_category": "refund",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2715.1,
+      "input_tokens": 1256,
+      "output_tokens": 165,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c23",
+      "tag": "clear",
+      "expected_category": "refund",
+      "expected_priority": "medium",
+      "pred_category": "refund",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2713.8,
+      "input_tokens": 1251,
+      "output_tokens": 151,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c24",
+      "tag": "clear",
+      "expected_category": "refund",
+      "expected_priority": "high",
+      "pred_category": "refund",
+      "pred_priority": "high",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2614.2,
+      "input_tokens": 1269,
+      "output_tokens": 149,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c25",
+      "tag": "clear",
+      "expected_category": "refund",
+      "expected_priority": "low",
+      "pred_category": "refund",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 3254.1,
+      "input_tokens": 1209,
+      "output_tokens": 135,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c26",
+      "tag": "clear",
+      "expected_category": "refund",
+      "expected_priority": "medium",
+      "pred_category": "refund",
+      "pred_priority": "medium",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2966.0,
+      "input_tokens": 1251,
+      "output_tokens": 163,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c27",
+      "tag": "clear",
+      "expected_category": "other",
+      "expected_priority": "low",
+      "pred_category": "other",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2527.0,
+      "input_tokens": 1232,
+      "output_tokens": 134,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c28",
+      "tag": "clear",
+      "expected_category": "other",
+      "expected_priority": "low",
+      "pred_category": "other",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2713.7,
+      "input_tokens": 1239,
+      "output_tokens": 155,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c29",
+      "tag": "clear",
+      "expected_category": "other",
+      "expected_priority": "low",
+      "pred_category": "other",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2670.3,
+      "input_tokens": 1207,
+      "output_tokens": 143,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    },
+    {
+      "id": "c30",
+      "tag": "adversarial",
+      "expected_category": "other",
+      "expected_priority": "low",
+      "pred_category": "other",
+      "pred_priority": "low",
+      "schema_ok": true,
+      "first_attempt_valid": false,
+      "repair_attempted": true,
+      "failure_reason": null,
+      "latency_ms": 2398.0,
+      "input_tokens": 1260,
+      "output_tokens": 113,
+      "cost_usd": null,
+      "category_ok": true,
+      "priority_ok": true,
+      "both_ok": true
+    }
+  ]
+}
