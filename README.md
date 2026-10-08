@@ -2,8 +2,8 @@
 
 **What it does:** takes one raw customer support ticket and returns a validated JSON triage result (`category`, `priority`, `summary`, `reason`). It is a small FastAPI service that calls Claude, validates the answer strictly, repairs it once if invalid, and fails with a clear error if that does not work.
 
-- **Demo video (3 minutes):** https://www.loom.com/share/your-actual-demo-id
-- **Repository:** https://github.com/your-username/support-triage-agent
+- **Demo video (3 minutes):** https://youtu.be/F57qfdPUey8
+- **Repository:** https://github.com/Habibullah5/ai-support-ticket-triage
 
 ## Quick start (exact commands)
 
