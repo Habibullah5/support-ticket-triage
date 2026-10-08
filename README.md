@@ -6,7 +6,7 @@
 
 Three-minute demo: https://youtu.be/F57qfdPUey8
 
-Repository: https://github.com/Habibullah5/ai-support-ticket-triage
+Repository:https://github.com/Habibullah5/support-ticket-triage
 
 ## Quick start (exact commands)
 
