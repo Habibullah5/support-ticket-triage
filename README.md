@@ -2,11 +2,11 @@
 
 ## What it does
 
-An automated customer-support ticket triage service. It takes one raw customer ticket and returns a validated JSON triage result (`category`, `priority`, `summary`, `reason`). It is a small FastAPI service that calls Claude, strictly validates the answer against a schema, makes **one** repair attempt if the answer is invalid, and otherwise fails with a clear HTTP error.
+Takes one raw customer support ticket and returns a validated JSON triage result: `category`, `priority`, `summary`, `reason`. It is a small FastAPI service that calls Claude, validates the answer against a strict schema, makes **one** repair attempt if the answer is invalid, and otherwise fails with a clear HTTP error.
+
+**The one problem it solves:** support teams lose time reading every ticket just to decide where it goes and how urgent it is. This service does that routing step automatically, end to end.
 
 ## Exact commands to run it
-
-**Setup and start the service**
 
 ```bash
 python -m venv .venv
@@ -16,12 +16,10 @@ cp .env.example .env                  # Windows: copy .env.example .env  -> then
 uvicorn app.main:app --port 8000      # start the API
 ```
 
-**Send a ticket** (second terminal)
+In a second terminal:
 
 ```bash
-curl -X POST http://localhost:8000/triage \
-  -H "Content-Type: application/json" \
-  -d '{"ticket": "I was charged twice for my Pro subscription this month."}'
+curl -X POST http://localhost:8000/triage -H "Content-Type: application/json" -d '{"ticket": "I was charged twice for my Pro subscription this month."}'
 ```
 
 ```powershell
@@ -29,30 +27,37 @@ curl -X POST http://localhost:8000/triage \
 Invoke-RestMethod -Method Post -Uri http://localhost:8000/triage -ContentType "application/json" -Body '{"ticket": "I was charged twice for my Pro subscription this month."}'
 ```
 
-**Run the tests** (model calls are mocked, no API key needed)
+Tests (model mocked, no API key needed): `pytest`
 
-```bash
-pytest
-```
+Eval suite (one command, real model, rewrites the results table below): `python evals/run_eval.py --update-readme`
 
-**Run the eval suite** (one command, calls the real model, rewrites the results table below)
+## Problem statement: one clearly stated problem, end to end
 
-```bash
-python evals/run_eval.py --update-readme
-```
+`POST /triage {"ticket": "..."}` -> versioned prompt file -> Claude call (retry with backoff + jitter, hard ceiling) -> strict schema validation -> **one** repair call if invalid -> `200` with the result, or a safe `502`/`503` error -> every call logged to `logs/triage.jsonl`.
+
+Categories: billing, technical, account, delivery, refund, other. Priorities: low, medium, high.
+
+## Trade-offs and known failures
+
+### Trade-offs
+- **Strict parsing costs extra calls:** JSON wrapped in code fences or extra text is rejected and sent to the repair step instead of being silently cleaned. "Valid" stays unambiguous, but 24 of 30 tickets (80%) needed a repair call, which adds latency and tokens.
+- **One repair, then fail:** No loops. A second invalid answer returns `502` instead of a guess.
+- **Small, cheap model:** Uses Claude Haiku 4.5. It is fast and inexpensive, but its priority judgment is weaker.
+- **Retries only for temporary errors:** Connection drops, timeouts, 429s and 5xx errors are retried. Configuration errors (e.g. a bad API key) fail immediately.
+
+### Known failures
+- **Only 6/30 (20%) answers are valid on the first attempt:** The prompt forbids code fences but the model still adds them. Not fixed yet; a `triage_v2` prompt should be compared against these numbers.
+- **Priority accuracy is 22/30 (73.3%):** Most misses are the model rating priority higher than the label (e.g. billing, account and delivery tickets marked `high` instead of `medium`).
+- **Ambiguous tickets:** Priority is correct on only 1/3.
+- **Category miss:** One technical ticket (c08) was classified as `other`.
+- **Non-English ticket:** Priority wrong (0/1). One case is a signal, not a measurement.
+- **Small, hand-written eval set:** 30 cases is a small sample; unseen real-world tickets may behave differently.
+- **Cost is not reported:** Pricing variables are not set in `.env`.
 
 ## Demo video
 
 - [Three-minute demo video](https://youtu.be/F57qfdPUey8)
 - Repository: https://github.com/Habibullah5/support-ticket-triage
-
-## Problem statement: one clearly stated problem, end to end
-
-Support teams lose time reading every ticket just to decide where it goes and how urgent it is. This product solves that one problem, end to end:
-
-`POST /triage {"ticket": "..."}` -> versioned prompt file -> Claude call (retry with backoff + jitter, hard ceiling) -> strict schema validation -> **one** repair call if invalid -> `200` with the result, or a safe `502`/`503` error -> every call logged to `logs/triage.jsonl`.
-
-Categories: billing, technical, account, delivery, refund, other. Priorities: low, medium, high.
 
 ## How it is built
 
@@ -117,23 +122,6 @@ _Generated by `python evals/run_eval.py` on 2026-10-08 18:42 UTC · model `claud
 | c19 | delivery/low | delivery/medium | - |
 | c20 | delivery/medium | delivery/high | - |
 <!-- EVAL_RESULTS_END -->
-
-## Trade-offs and known failures
-
-### Trade-offs
-- **Strict parsing costs extra calls:** JSON wrapped in code fences or extra text is rejected and sent to the repair step instead of being silently cleaned. "Valid" stays unambiguous, but 24 of 30 tickets (80%) needed a repair call, which adds latency and tokens.
-- **One repair, then fail:** No loops. A second invalid answer returns `502` instead of a guess.
-- **Small, cheap model:** Uses Claude Haiku 4.5. It is fast and inexpensive, but its priority judgment is weaker.
-- **Retries only for temporary errors:** Connection drops, timeouts, 429s and 5xx errors are retried. Configuration errors (e.g. a bad API key) fail immediately.
-
-### Known failures
-- **Only 6/30 (20%) answers are valid on the first attempt:** The prompt forbids code fences but the model still adds them. Not fixed yet; a `triage_v2` prompt should be compared against these numbers.
-- **Priority accuracy is 22/30 (73.3%):** Most misses are the model rating priority higher than the label (e.g. billing, account and delivery tickets marked `high` instead of `medium`).
-- **Ambiguous tickets:** Priority is correct on only 1/3.
-- **Category miss:** One technical ticket (c08) was classified as `other`.
-- **Non-English ticket:** Priority wrong (0/1). One case is a signal, not a measurement.
-- **Small, hand-written eval set:** 30 cases is a small sample; unseen real-world tickets may behave differently.
-- **Cost is not reported:** Pricing variables are not set in `.env`.
 
 ## Project layout
 
